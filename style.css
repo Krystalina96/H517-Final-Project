@@ -46,3 +46,15 @@ path:hover {
     fill-opacity: .5;
 }
 
+/* tooltip */
+#map-tooltip {
+    border: 2;
+}
+
+/* legend */
+#map-legend {
+    position: absolute;
+    left: 1000px;
+    top: 400px;
+}
+
