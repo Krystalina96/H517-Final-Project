@@ -4,14 +4,14 @@ body {
 
 /* SIDEBAR MENU */
 .sidenav {
-    height: 100%; 
-    width: 200px; 
-    position: fixed; 
-    z-index: 1; 
-    top: 0; 
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
     left: 0;
-    background-color: #111; 
-    overflow-x: hidden; 
+    background-color: #111;
+    overflow-x: hidden;
     padding-top: 20px;
 }
 
@@ -48,7 +48,16 @@ path:hover {
 
 /* tooltip */
 #map-tooltip {
-    border: 2;
+  position: absolute;
+	text-align: left;
+	width: 200px;
+	height: 40px;
+	padding: 10px;
+	font: 12px sans-serif;
+	background: white;
+	border: 0px;
+	border-radius: 8px;
+	pointer-events: none;
 }
 
 /* legend */
@@ -57,4 +66,3 @@ path:hover {
     left: 1000px;
     top: 400px;
 }
-
