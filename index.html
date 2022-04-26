@@ -24,7 +24,12 @@
           <div class="item1">
               <svg id="total-cases-grid"></svg>
           </div>
+
           <div class="item2">
+              <svg id="total-deaths-grid"></svg>
+          </div>
+
+          <div class="item3">
               <div id="map">
                   <p class="sub-header">Map of Outbreak</p>
                   <p class="information-text" id="map-information-text">Hover over states on the map for additional information.</p>
@@ -34,7 +39,7 @@
               </div>
           </div>
 
-          <div class="item3">
+          <div class="item4">
             <div id="line-graph">
                 <p class="sub-header">Timeline of Deaths Per Day</p>
                 <p class="information-text">Hover over bars on the chart to visualize deaths by date on the map.</p>
@@ -42,7 +47,7 @@
             </div>
           </div>
 
-          <div class="item4">
+          <div class="item5">
               <p class="sub-sub-header">Deaths by Age Group</p>
               <svg id="age-graph-grid"></svg>
           </div>
@@ -65,6 +70,7 @@
     d3.csv('data/united_states_covid19_cases_deaths_and_testing_by_state.csv', function (data) {
       //console.log(data);
 
+      //total cases svg
       var svg_total_cases = d3.select("#total-cases-grid")
         .attr("width", 300)
         .attr("height", 100)
@@ -85,6 +91,28 @@
         .style('font-weight', 'bold')
         .style('text-anchor', 'middle')
         .text(numberWithCommas(totalCases));
+
+      //total deaths svg
+      var svg_total_deaths = d3.select("#total-deaths-grid")
+        .attr("width", 300)
+        .attr("height", 100)
+        .style("border", "solid");
+
+      svg_total_deaths.append("text")
+        .attr('x', '50%')
+        .attr('y', 20)
+        .style('text-anchor', 'middle')
+        .text("Total Deaths");
+
+      var totalDeaths = numberWithCommas(data[data.length - 1].total_deaths);
+
+      svg_total_deaths.append("text")
+        .attr('x', '50%')
+        .attr('y', 70)
+        .style('font-size', 40)
+        .style('font-weight', 'bold')
+        .style('text-anchor', 'middle')
+        .text(totalDeaths);
 
 
 
@@ -149,6 +177,7 @@
 
     var legendLabels = d3.scale.ordinal().range(legendText);
 
+    //legend text
     legend_labels.append("text")
         .attr("x", 40)
         .attr("y", function(d) {return d;})
@@ -230,7 +259,8 @@
                         .style("top", (d3.event.pageY - 28) + "px");
 
                     d3.select("#map-tooltip")
-                      .html("<b style='font-size:18px'>" + d.properties.name + "</b><br><b style='font-size:14px'>Number of Cases:</b> " + numberWithCommas(Math.round(d.properties.cases)) );
+                      .html(
+                        "<b style='font-size:18px'>" + d.properties.name + "</b><br><b style='font-size:14px'>Number of Cases:</b> " + numberWithCommas(Math.round(d.properties.cases)) );
                       //.html(d.properties.name + "<br> Number of Cases: " + Math.round(d.properties.cases) );
 
 
