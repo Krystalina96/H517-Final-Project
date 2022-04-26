@@ -30,10 +30,10 @@
                     <div id="map-tooltip"></div>
                 </div>
 
-                <div id="timeline">
+                <div id="line-graph">
                     <p class="sub-header">Timeline of Deaths Per Day</p>
                     <p class="information-text">Hover over bars on the chart to visualize deaths by date on the map.</p>
-                    <svg id="timeline-grid"></svg>
+                    <svg id="line-graph-grid"></svg>
                 </div>
             </div>
 
@@ -56,6 +56,10 @@
     //var colors = ["#fafa6e","#9cdf7c","#4abd8c","#00968e", "#106e7c", "#2a4858"];
     var colors = ["#ccffcc", "#7fcdbb", "#41b6c4", "#1d91c0", "#225da8", "#003366"]
 
+
+    /********** US MAP OF TOTAL CASES **********/
+
+    //map dimensions
     var mapMargin = {top: 0, right: 20, bottom: 20, left: 20},
         mapWidth = 960 - mapMargin.left - mapMargin.right,
         mapHeight = 500 - mapMargin.top - mapMargin.bottom;
@@ -64,13 +68,9 @@
         .translate([mapWidth/2, mapHeight/2])
         .scale([1000]);
 
-    var path = d3.geo.path()
-        .projection(projection);
+    var path = d3.geo.path().projection(projection);
 
-    var color = d3.scale.linear()
-        //.range(["#9A6FD6","#8C60C6","#7E51B7","#6A3EA3", "#5E2F98", "#4D2082"]);
-        //.range(["#fafa6e","#9cdf7c","#4abd8c","#00968e", "#106e7c", "#2a4858"]);
-        .range(colors);
+    var color = d3.scale.linear().range(colors);
 
     //create SVG map area
     var svg_map = d3.select("#map-grid")
@@ -208,11 +208,170 @@
                         .duration(500)
                         .style("opacity", 0);
                 });
-
-
         })
+    });
+
+    /********** CASES OVER TIME **********/
+
+    //line graph dimensions
+    var lineMargin = {top: 20, right: 20, bottom: 50, left: 100},
+        lineWidth = 960 - lineMargin.left - lineMargin.right,
+        lineHeight = 500 - lineMargin.top - lineMargin.bottom;
+
+    //parse dates
+    var parseDate = d3.time.format("%m/%d/%Y").parse;
+
+    var max = 0;
+    var minDate = new Date();
+    var maxDate = new Date();
+
+    var lineData = [];
+    var minSubmissionDate = "",
+        submissionDate = "",
+        tempCases = 0;
+
+    ///*
+    //load in data
+    d3.csv("data/United_States_COVID-19_Cases_and_Deaths_by_State_over_Time.csv", function(data) {
+      //grab min date
+      minSubmissionDate = data[0].submission_date;
+
+      for(i = 0; i < data.length; i++) {
+        submissionDate = data[i].submission_date;
+        //console.log(submissionDate);
+
+        if(submissionDate.trim() == minSubmissionDate.trim()) {
+          //console.log(data[i].tot_cases, Number(data[i].tot_cases));
+          tempCases = tempCases + Number(data[i].tot_cases);
+          //lineData.push({date: submissionDate, cases: })
+
+        } else {
+          //tempCases = 0;
+          lineData.push({date: parseDate(minSubmissionDate), cases: tempCases});
+          minSubmissionDate = data[i].submission_date;
+          tempCases = 0;
+        }
+      };
+
+      //console.log(data.length);
+
+      max = d3.max(lineData, function(d) {return d.cases });
+      minDate = parseDate(data[0].submission_date);
+      maxDate = parseDate(data[data.length - 1].submission_date);
+
+      //scales & axes
+      var line_y = d3.scale.linear()
+        .domain([0,max])
+        .range([lineHeight,0]);
+
+      var line_x = d3.time.scale()
+        .domain([minDate,maxDate])
+        //.domain([new Date(2020, 1, 22), new Date(2022, 4, 19)])
+        .range([0,lineWidth]);
+
+
+      var line_yAxis = d3.svg.axis()
+        .orient("left")
+        .scale(line_y);
+
+      var line_xAxis = d3.svg.axis()
+        .orient("bottom")
+        .scale(line_x);
+
+      var line = d3.svg.line()
+        .x(function(d){ return line_x(d.date); })
+        .y(function(d){ return line_y(d.cases); })
+        .interpolate("cardinal");
+
+      //line graph svg
+      var svg_line = d3.select("#line-graph-grid")
+        .attr("height", lineHeight + lineMargin.top + lineMargin.bottom)
+        .attr("width", lineWidth + lineMargin.left + lineMargin.right)
+        .style("border", "solid");
+
+      var lineGroup = svg_line.append("g")
+        .attr("class", "lineGroup")
+        .attr("transform", "translate(100, 20)");
+
+      lineGroup.append("path")
+        .attr("class", "line")
+        .attr("d", function(d) { return line(lineData); })
+        .style("fill", "none")
+        .style("stroke-width", 3)
+        .style("stroke", colors[1]);
+
+      lineGroup.append("g")
+        .attr("class", "line-axis x")
+        .attr("transform", "translate(0," + lineHeight + ")")
+        .call(line_xAxis);
+
+      lineGroup.append("g")
+        .attr("class", "line-axis y")
+        .call(line_yAxis);
+
+        //console.log(lineData);
 
     })
+    //*/
+
+    /*
+
+      d3.csv("data/United_States_COVID-19_Cases_and_Deaths_by_State_over_Time.csv")
+        .row(function(d) { return { date: parseDate(d.submission_date), cases: Number(d.tot_cases)}; })
+        .get(function(error, rows) {
+          max = d3.max(rows, function(d) {return d.cases; });
+          minDate = d3.min(rows, function(d) { return d.date; });
+          maxDate = d3.max(rows, function(d) { return d.date; });
+
+          //scales & axes
+          var line_y = d3.scale.linear()
+            .domain([0,max])
+            .range([lineHeight,0]);
+
+          var line_x = d3.time.scale()
+            .domain([minDate,maxDate])
+            .range([0,lineWidth]);
+
+          var line_yAxis = d3.svg.axis()
+            .orient("left")
+            .scale(line_y);
+
+          var line_xAxis = d3.svg.axis()
+            .orient("bottom")
+            .scale(line_x);
+
+          var line = d3.svg.line()
+      			.x(function(d){ return line_x(d.date); })
+      			.y(function(d){ return line_y(d.cases); })
+      			.interpolate("cardinal");
+
+          //line graph svg
+          var svg_line = d3.select("#line-graph-grid")
+            .attr("height", 1000)
+            .attr("width", "100%")
+            .style("border", "solid");
+
+          var lineGroup = svg_line.append("g")
+            .attr("class", "lineGroup")
+            .attr("transform", "translate(50, 20)");
+
+          lineGroup.append("path")
+            .attr("class", "line")
+            .attr("d", function(d) { return line(rows); })
+            .style("fill", "none")
+            .style("stroke-width", 3)
+            .style("stroke", "red");
+
+          lineGroup.append("g")
+            .attr("class", "line-axis x")
+            .attr("transform", "translate(0," + lineHeight + ")")
+            .call(line_xAxis);
+
+          lineGroup.append("g")
+            .attr("class", "line-axis y")
+            .call(line_yAxis);
+        });
+        */
 
 
 

@@ -66,3 +66,15 @@ path:hover {
     left: 1000px;
     top: 400px;
 }
+
+/* LINE GRAPH OVER TIME */
+.line-axis path,
+.line-axis line {
+  fill: none;
+  stroke: slategray;
+  shape-rendering: crispEdges;
+}
+
+.line-axis x {
+  stroke: purple;
+}
