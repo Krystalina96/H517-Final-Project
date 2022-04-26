@@ -30,6 +30,10 @@
           </div>
 
           <div class="item3">
+              <svg id="pie-chart-grid"></svg>
+          </div>
+
+          <div class="item4">
               <div id="map">
                   <p class="sub-header">Map of Outbreak</p>
                   <p class="information-text" id="map-information-text">Hover over states on the map for additional information.</p>
@@ -39,7 +43,7 @@
               </div>
           </div>
 
-          <div class="item4">
+          <div class="item5">
             <div id="line-graph">
                 <p class="sub-header">Timeline of Deaths Per Day</p>
                 <p class="information-text">Hover over bars on the chart to visualize deaths by date on the map.</p>
@@ -47,7 +51,7 @@
             </div>
           </div>
 
-          <div class="item5">
+          <div class="item6">
               <p class="sub-sub-header">Deaths by Age Group</p>
               <svg id="age-graph-grid"></svg>
           </div>
@@ -104,7 +108,7 @@
         .style('text-anchor', 'middle')
         .text("Total Deaths");
 
-      var totalDeaths = numberWithCommas(data[data.length - 1].total_deaths);
+      var totalDeaths = data[data.length - 1].total_deaths;
 
       svg_total_deaths.append("text")
         .attr('x', '50%')
@@ -112,7 +116,55 @@
         .style('font-size', 40)
         .style('font-weight', 'bold')
         .style('text-anchor', 'middle')
-        .text(totalDeaths);
+        .text(numberWithCommas(totalDeaths));
+
+
+      // DEATHS PIE CHART ********************************************
+      var pieMargin = {top: 0, right: 20, bottom: 20, left: 20},
+          pieWidth = 960 - pieMargin.left - pieMargin.right,
+          pieHeight = 500 - pieMargin.top - pieMargin.bottom
+          pieRadius = pieHeight / 2;
+
+      var percentSurvived = (Number(totalCases) - Number(totalDeaths)) * 100 / Number(totalCases);
+      var percentDeath = Number(totalDeaths) * 100 / Number(totalCases);
+      console.log(Math.round(percentSurvived), Math.round(percentDeath));
+
+      var pieData = [
+        {"label": "Total Survived", "value": Math.round(percentSurvived)},
+        {"label": "Total Deaths", "value": Math.round(percentDeath)}
+      ];
+
+      var svg_pie_chart = d3.select("#pie-chart-grid")
+        .data([pieData])
+        .attr('width', pieWidth + pieMargin.left + pieMargin.right)
+        .attr('height', pieHeight + pieMargin.top + pieMargin.bottom)
+        .append('g')
+        .attr('transform', 'translate(' + pieRadius + ',' + pieRadius + ')');
+
+      var pie = d3.layout.pie().value(function(d) {return d.value; });
+
+      var arc = d3.svg.arc().outerRadius(pieRadius);
+
+      var arcs = svg_pie_chart.selectAll('g.slice')
+        .data(pie)
+        .enter()
+        .append('g')
+        .attr('class', 'slice');
+
+      arcs.append('path')
+        .attr('fill', function(d, i) {return colors[i]; })
+        .attr('d', function(d) {return arc(d); })
+
+      arcs.append('text')
+        .attr('transform', function(d) {
+          d.innerRadius = 100;
+          d.outerRadius = pieRadius;
+          return 'translate(' + arc.centroid(d) + ')';
+        })
+        .attr('text-anchor', 'middle')
+        .style('font-size', 20)
+        .text(function(d, i) {return pieData[i].value + '%'; });
+
 
 
 
