@@ -21,31 +21,31 @@
         <div id="sub-title">a visualization by Krystal Nolasco</div>
 
         <div class="grid-container">
-            <div class="item1">
-                <div id="map">
-                    <p class="sub-header">Map of Outbreak</p>
-                    <p class="information-text" id="map-information-text">Hover over states on the map for additional information.</p>
-                    <svg id="map-grid"></svg>
-                    <svg id="map-legend"></svg>
-                    <div id="map-tooltip"></div>
-                </div>
+          <div class="item1">
+              <svg id="total-cases-grid"></svg>
+          </div>
+          <div class="item2">
+              <div id="map">
+                  <p class="sub-header">Map of Outbreak</p>
+                  <p class="information-text" id="map-information-text">Hover over states on the map for additional information.</p>
+                  <svg id="map-grid"></svg>
+                  <svg id="map-legend"></svg>
+                  <div id="map-tooltip"></div>
+              </div>
+          </div>
 
-                <div id="line-graph">
-                    <p class="sub-header">Timeline of Deaths Per Day</p>
-                    <p class="information-text">Hover over bars on the chart to visualize deaths by date on the map.</p>
-                    <svg id="line-graph-grid"></svg>
-                </div>
+          <div class="item3">
+            <div id="line-graph">
+                <p class="sub-header">Timeline of Deaths Per Day</p>
+                <p class="information-text">Hover over bars on the chart to visualize deaths by date on the map.</p>
+                <svg id="line-graph-grid"></svg>
             </div>
+          </div>
 
-            <div class="item2">
-                <p class="sub-sub-header">Deaths by Gender</p>
-                <svg id="gender-graph-grid"></svg>
-            </div>
-
-            <div class="item3">
-                <p class="sub-sub-header">Deaths by Age Group</p>
-                <svg id="age-graph-grid"></svg>
-            </div>
+          <div class="item4">
+              <p class="sub-sub-header">Deaths by Age Group</p>
+              <svg id="age-graph-grid"></svg>
+          </div>
         </div>
 
         <div class="footer">&copy; Copyright 2022 Krystal Nolasco</div>
@@ -54,10 +54,45 @@
   <script>
 
     //var colors = ["#fafa6e","#9cdf7c","#4abd8c","#00968e", "#106e7c", "#2a4858"];
-    var colors = ["#ccffcc", "#7fcdbb", "#41b6c4", "#1d91c0", "#225da8", "#003366"]
+    var colors = ["#ccffcc", "#7fcdbb", "#41b6c4", "#1d91c0", "#225da8", "#003366"];
+
+    //function for adding commas to numbers
+    function numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    // US TOTAL CASES ********************************************
+    d3.csv('data/united_states_covid19_cases_deaths_and_testing_by_state.csv', function (data) {
+      //console.log(data);
+
+      var svg_total_cases = d3.select("#total-cases-grid")
+        .attr("width", 300)
+        .attr("height", 100)
+        .style("border", "solid");
+
+      svg_total_cases.append("text")
+        .attr('x', '50%')
+        .attr('y', 20)
+        .style('text-anchor', 'middle')
+        .text("Total Cases");
+
+      var totalCases = data[data.length - 1].total_cases;
+
+      svg_total_cases.append("text")
+        .attr('x', '50%')
+        .attr('y', 70)
+        .style('font-size', 40)
+        .style('font-weight', 'bold')
+        .style('text-anchor', 'middle')
+        .text(numberWithCommas(totalCases));
 
 
-    /********** US MAP OF TOTAL CASES **********/
+
+
+    });
+
+
+    // US MAP OF TOTAL CASES BY STATE ********************************************
 
     //map dimensions
     var mapMargin = {top: 0, right: 20, bottom: 20, left: 20},
@@ -128,10 +163,7 @@
     d3.csv('data/united_states_covid19_cases_deaths_and_testing_by_state.csv', function (data) {
         //console.log(data);
 
-        //function for adding commas to numbers
-        function numberWithCommas(x) {
-          return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
+
 
         d3.json("data/us-states.json", function (json) {
             //console.log(json);
@@ -211,7 +243,7 @@
         })
     });
 
-    /********** CASES OVER TIME **********/
+    // LINE GRAPH CASES OVER TIME ********************************************
 
     //line graph dimensions
     var lineMargin = {top: 20, right: 20, bottom: 50, left: 100},

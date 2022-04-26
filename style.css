@@ -41,6 +41,11 @@ body {
     .sidenav a {font-size: 18px;}
 }
 
+/* TOTAL CASES */
+#total-cases-grid {
+  text-align: center;
+}
+
 /* MAP OF US */
 path:hover {
     fill-opacity: .5;
@@ -64,7 +69,7 @@ path:hover {
 #map-legend {
     position: absolute;
     left: 1000px;
-    top: 400px;
+    top: 550px;
 }
 
 /* LINE GRAPH OVER TIME */
@@ -73,8 +78,4 @@ path:hover {
   fill: none;
   stroke: slategray;
   shape-rendering: crispEdges;
-}
-
-.line-axis x {
-  stroke: purple;
 }
