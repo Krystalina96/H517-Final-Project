@@ -51,8 +51,8 @@
           </div>
 
           <div class="item6">
-              <p class="sub-sub-header">Deaths by Age Group</p>
-              <svg id="age-graph-grid"></svg>
+              <p class="sub-sub-header">Cases by Race Group</p>
+              <svg id="race-graph-grid"></svg>
           </div>
         </div>
 
@@ -469,7 +469,7 @@
 
         //console.log(lineData);
 
-    })
+    });
     //*/
 
     /*
@@ -530,6 +530,152 @@
             .call(line_yAxis);
         });
         */
+
+    // INDIANA CASES BY RACE ********************************************
+    d3.csv("data/IN_Covid_Cases.csv", function(data) {
+      //console.log(data)
+
+      //size
+      var raceMargin = {top: 35, right: 0, bottom: 30, left: 40},
+        raceWidth = 960 - raceMargin.left - raceMargin.right,
+        raceHeight = 500 - raceMargin.top - raceMargin.bottom;
+
+      //svg
+      var svg_race_graph = d3.select('#race-graph-grid')
+        .attr('width', raceWidth + raceMargin.left + raceMargin.right)
+        .attr('height', raceHeight + raceMargin.top + raceMargin.bottom)
+        .style('border', 'solid')
+        .append('g')
+        .attr('transform', 'translate(' + raceMargin.left + ',' + raceMargin.top + ')');
+
+
+
+      var totalAsian = 0,
+          totalBlack = 0,
+          totalMultipleOther = 0,
+          totalWhite = 0;
+
+      //get total count for each race
+      for(i = 0; i < data.length; i++) {
+        if(data[i].race == "Asian") {
+          totalAsian++;
+        } else if (data[i].race == "Black") {
+          totalBlack++;
+        } else if (data[i].race == "Multiple/Other") {
+          totalMultipleOther++;
+        } else if (data[i].race == "Multiple/Other") {
+          totalMultipleOther++;
+        } else if (data[i].race == "White") {
+          totalWhite++;
+        }
+      };
+
+      //make data array
+      var raceData = {
+        race: ['Asian', 'Black', 'Multiple/Other', 'White'],
+        value: [totalAsian, totalBlack, totalMultipleOther, totalWhite]
+      };
+
+      console.log(raceData);
+
+      //scales and axes
+      var race_x = d3.scale.ordinal()
+        .domain(d3.range(raceData.value.length))
+        .rangeRoundBands([0, raceWidth], 0.05);
+
+      var race_y = d3.scale.linear()
+        .domain([0, d3.max(raceData.value)])
+        .range([0, raceHeight]);
+
+      var race_xScale = d3.scale.ordinal()
+        .domain(['Asian', 'Black', 'Multiple/Other', 'White'])
+        .rangeRoundBands([0, raceWidth], 0.05);
+
+      var race_yScale = d3.scale.linear()
+        .domain([d3.max(raceData.value), 0])
+        .range([0, raceHeight]);
+
+      var race_xAxis = d3.svg.axis()
+        .scale(race_xScale);
+
+      var race_yAxis = d3.svg.axis()
+        .orient('left')
+        .scale(race_yScale);
+
+      svg_race_graph.append('g')
+        .attr('class', 'x-axis')
+        .attr('transform', 'translate(0,' + raceHeight + ')')
+        .call(race_xAxis);
+
+      svg_race_graph.append('g')
+        .attr('class', 'y-axis')
+        .call(race_yAxis);
+
+      //y axis text label
+      svg_race_graph.append('text')
+        .attr('class', 'y-axis-label')
+        .attr('text-anchor', 'middle')
+        .attr('y', raceMargin.left + 60)
+        .attr('x', raceHeight / 2)
+        .attr('transform', 'translate(' + raceMargin.left + ')')
+        .attr('transform', function(d) {
+          return 'translate(' + raceMargin.left + ') rotate(90)'
+        })
+        .text('Number of Cases');
+
+      //bar chart
+        svg_race_graph.selectAll('bar1')
+          .data(raceData.value, function(d) {console.log(d); return d; })
+          .enter()
+          .append('rect')
+          .attr('x', function (d, i) { return race_x(i); })
+          .attr('y', function(d) { return raceHeight - race_y(d); })
+          .attr('width', race_xScale.rangeBand())
+          .attr('height', function(d) { return race_y(d); })
+          .style('fill', colors[2]);
+
+
+        //label bars
+        svg_race_graph.selectAll('text')
+          .data(raceData.value, function (d) { return d; })
+          .enter()
+          .append('text')
+          .text(function (d) { return d; })
+          .attr('text-anchor', 'middle')
+          .attr('x', function (d, i) { return race_x(i) + race_x.rangeBand() / 2; })
+          .attr('y', function (d) { return race_yScale(d) - 5; })
+          .attr('font-family', 'sans-serif')
+          .attr('font-size', '12')
+          .attr('fill', 'black');
+      /*
+      var raceMargin = {top: 35, right: 0, bottom: 30, left: 40},
+        raceWidth = 960 - raceMargin.left - raceMargin.right,
+        raceHeight = 500 - raceMargin.top - raceMargin.bottom
+
+      //svg
+      var svg_race_graph = d3.select('#race-graph-grid')
+        .attr('width', 960)
+        .attr('height', 500)
+        .append('g')
+        .attr("transform", "translate(" + raceMargin.left + "," + raceMargin.top + ")")
+        .style('border', 'solid');
+
+      //scales
+      var race_x = d3.scale.ordinal()
+        .domain(data.map(function(d) { return d['']}))
+
+      var race_y = d3.scale.linear()
+        .domain([0, d3.max(data, function(d) {return d['race']; }) * 1.1])
+        .range([raceHeight, 0]);
+        */
+
+
+
+
+
+
+    })
+
 
 
 
