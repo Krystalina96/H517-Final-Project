@@ -38,7 +38,6 @@
                   <p class="sub-header">Map of Outbreak</p>
                   <p class="information-text" id="map-information-text">Hover over states on the map for additional information.</p>
                   <svg id="map-grid"></svg>
-                  <svg id="map-legend"></svg>
                   <div id="map-tooltip"></div>
               </div>
           </div>
@@ -62,8 +61,13 @@
   </body>
   <script>
 
-    //var colors = ["#fafa6e","#9cdf7c","#4abd8c","#00968e", "#106e7c", "#2a4858"];
+    //colors
     var colors = ["#ccffcc", "#7fcdbb", "#41b6c4", "#1d91c0", "#225da8", "#003366"];
+
+    //for legends
+    var squareDimensions = 20;
+    var color = d3.scale.linear().range(colors);
+    var legendColors = d3.scale.ordinal().range(colors);
 
     //function for adding commas to numbers
     function numberWithCommas(x) {
@@ -121,23 +125,24 @@
 
       // DEATHS PIE CHART ********************************************
       var pieMargin = {top: 0, right: 20, bottom: 20, left: 20},
-          pieWidth = 960 - pieMargin.left - pieMargin.right,
-          pieHeight = 500 - pieMargin.top - pieMargin.bottom
+          pieWidth = 1000 - pieMargin.left - pieMargin.right,
+          pieHeight = 250 - pieMargin.top - pieMargin.bottom
           pieRadius = pieHeight / 2;
 
       var percentSurvived = (Number(totalCases) - Number(totalDeaths)) * 100 / Number(totalCases);
       var percentDeath = Number(totalDeaths) * 100 / Number(totalCases);
-      console.log(Math.round(percentSurvived), Math.round(percentDeath));
 
       var pieData = [
         {"label": "Total Survived", "value": Math.round(percentSurvived)},
         {"label": "Total Deaths", "value": Math.round(percentDeath)}
       ];
 
+      //pie chart svg
       var svg_pie_chart = d3.select("#pie-chart-grid")
         .data([pieData])
         .attr('width', pieWidth + pieMargin.left + pieMargin.right)
         .attr('height', pieHeight + pieMargin.top + pieMargin.bottom)
+        .style('border', 'solid')
         .append('g')
         .attr('transform', 'translate(' + pieRadius + ',' + pieRadius + ')');
 
@@ -155,6 +160,7 @@
         .attr('fill', function(d, i) {return colors[i]; })
         .attr('d', function(d) {return arc(d); })
 
+      //pie chart text
       arcs.append('text')
         .attr('transform', function(d) {
           d.innerRadius = 100;
@@ -165,7 +171,42 @@
         .style('font-size', 20)
         .text(function(d, i) {return pieData[i].value + '%'; });
 
+      //legend svg
+      var svg_pie_legend = svg_pie_chart.append('g')
+        .attr('width', 140)
+        .attr('height', 200)
+        .style('border', 'solid')
+        .data(color.domain().slice().reverse())
+        .attr('transform', 'translate(120, -30)');
 
+      var legend_squares = svg_pie_legend.selectAll("rect")
+        .data([0, squareDimensions + 10])
+        .enter()
+        .append("g")
+        .classed("rect", true);
+
+      legend_squares.append("rect")
+        .attr("width", squareDimensions)
+        .attr("height", squareDimensions)
+        .attr("x", 10)
+        .attr('y', function(d) { return d; })
+        .attr('fill', function (d, i) {return legendColors(i); });
+
+      var legendText = ["Percent Survived", "Percent Deaths"];
+
+      var legend_labels = svg_pie_legend.selectAll("text")
+        .data([16, 46])
+        .enter()
+        .append("g")
+        .classed("text", true);
+
+      var legendLabels = d3.scale.ordinal().range(legendText);
+
+      //legend text
+      legend_labels.append("text")
+          .attr("x", 40)
+          .attr("y", function(d) { return d;})
+          .text(function(d, i) {return legendLabels(i); });
 
 
 
@@ -185,7 +226,7 @@
 
     var path = d3.geo.path().projection(projection);
 
-    var color = d3.scale.linear().range(colors);
+
 
     //create SVG map area
     var svg_map = d3.select("#map-grid")
@@ -196,23 +237,29 @@
     //define legend text
     var legendText = ["4k - 156.3k", "235.8k - 444.6k", "478.0k - 833.7k", "928.6k - 1.5M", "1.6M - 2.8M", "3.1M - 9.1M"];
 
-    //create SVG area for map legend
+    //SVG area for map legend
+    var svg_legend = svg_map.append('g')
+        .attr("width", 140)
+        .attr("height", 200)
+        .data(color.domain().slice().reverse())
+        .attr('transform', 'translate(780, 260)');
+
+    /*
     var svg_legend = d3.select("#map-legend")
         .attr("width", 140)
         .attr("height", 200)
         //.style('border', 'solid')
         .data(color.domain().slice().reverse())
         .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      */
 
-    var squareDimensions = 20;
+
 
     var legend_squares = svg_legend.selectAll("rect")
         .data([0, squareDimensions + 10, squareDimensions*2 + 20, squareDimensions*3 + 30, squareDimensions*4 + 40, squareDimensions*5 + 50])
         .enter()
         .append("g")
         .classed("rect", true);
-
-    var legendColors = d3.scale.ordinal().range(colors);
 
     legend_squares.append("rect")
         .attr("width", squareDimensions)
@@ -232,7 +279,7 @@
     //legend text
     legend_labels.append("text")
         .attr("x", 40)
-        .attr("y", function(d) {return d;})
+        .attr("y", function(d) { return d;})
         .text(function(d, i) {return legendLabels(i); });
 
     //tooltip
@@ -242,9 +289,6 @@
 
     //load in data
     d3.csv('data/united_states_covid19_cases_deaths_and_testing_by_state.csv', function (data) {
-        //console.log(data);
-
-
 
         d3.json("data/us-states.json", function (json) {
             //console.log(json);
