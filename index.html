@@ -59,6 +59,16 @@
               <p class="sub-sub-header">Indiana Cases by sex</p>
               <svg id="sex-graph-grid"></svg>
           </div>
+
+          <div class="item8">
+              <p class="sub-sub-header">Indiana Cases Death Age !! </p>
+              <svg id="age-graph-grid"></svg>
+          </div>
+
+          <div class="item9">
+              <p class="sub-sub-header">Indiana Cases Death Hospitalization Status !! </p>
+              <svg id="hospital-graph-grid"></svg>
+          </div>
         </div>
 
         <div class="footer">&copy; Copyright 2022 Krystal Nolasco</div>
@@ -653,7 +663,7 @@
           .attr('font-size', '12')
           .attr('fill', 'black');
 
-        // INDIANA CASES BY sex ********************************************
+        // INDIANA CASES BY SEX ********************************************
 
         //size
         var sexMargin = {top: 35, right: 0, bottom: 30, left: 40},
@@ -756,7 +766,286 @@
             .attr('font-size', '12')
             .attr('fill', 'black');
 
-    })
+        // INDIANA DEATHS AND AGE ********************************************
+
+        //size
+        var ageMargin = {top: 80, right: 180, bottom: 80, left: 180},
+            ageWidth = 960 - ageMargin.left - ageMargin.right,
+            ageHeight = 500 - ageMargin.top - ageMargin.bottom;
+
+        var svg_age_graph = d3.select("#age-graph-grid")
+        	.attr("width", ageWidth + ageMargin.left + ageMargin.right)
+          .attr("height", ageHeight + ageMargin.top + ageMargin.bottom)
+          .style('border', 'solid')
+        	.append("g")
+          .attr("transform", "translate(" + ageMargin.left + "," + ageMargin.top + ")");
+
+        //grab age group death data
+        var total_0_17 = 0,
+            total_18_49 = 0,
+            total_50_64 = 0,
+            total_65plus = 0,
+            tempCases = 0;
+
+            //console.log(data[100].age_group);
+
+        //age group counts
+        for (i = 0; i < data.length; i++) {
+          if (data[i].age_group == "0 - 17 years" && data[i].death_yn == "Yes") {
+            total_0_17++;
+          } else if (data[i].age_group == "18 to 49 years" && data[i].death_yn == "Yes") {
+            total_18_49++;
+          } else if (data[i].age_group == "50 to 64 years" && data[i].death_yn == "Yes") {
+            total_50_64++;
+          } else if (data[i].age_group == "65+ years" && data[i].death_yn == "Yes") {
+            total_65plus++;
+          }
+        };
+
+        var ageData = {
+          age: ['0-17', '18-49', '50-64', '65+'],
+          value: [total_0_17, total_18_49, total_50_64, total_65plus]
+        };
+
+        //scales and axes
+        var age_x = d3.scale.ordinal()
+          .domain(d3.range(ageData.value.length))
+          .rangeRoundBands([0, ageWidth], 0.05);
+
+        var age_y = d3.scale.linear()
+          .domain([0, d3.max(ageData.value)])
+          .range([0, ageHeight]);
+
+        var age_xScale = d3.scale.ordinal()
+          .domain(['0-17', '18-49', '50-64', '65+'])
+          .rangeRoundBands([0, ageWidth], 0.05);
+
+        var age_yScale = d3.scale.linear()
+          .domain([d3.max(ageData.value), 0])
+          .range([0, ageHeight]);
+
+        var age_xAxis = d3.svg.axis()
+          .scale(age_xScale);
+
+        var age_yAxis = d3.svg.axis()
+          .orient('left')
+          .scale(age_yScale);
+
+        svg_age_graph.append('g')
+          .attr('class', 'x-axis')
+          .attr('transform', 'translate(0,' + ageHeight + ')')
+          .call(age_xAxis);
+
+        svg_age_graph.append('g')
+          .attr('class', 'y-axis')
+          .call(age_yAxis);
+
+        //y axis text label
+        svg_age_graph.append('text')
+          .attr('class', 'y-axis-label')
+          .attr('text-anchor', 'middle')
+          .attr('y', ageMargin.left + 60)
+          .attr('x', ageHeight / 2)
+          .attr('transform', 'translate(' + ageMargin.left + ')')
+          .attr('transform', function(d) {
+            return 'translate(' + ageMargin.left + ') rotate(90)'
+          })
+          .text('Number of Cases');
+
+        //bar chart
+          svg_age_graph.selectAll('bar1')
+            .data(ageData.value, function(d) { return d; })
+            .enter()
+            .append('rect')
+            .attr('x', function (d, i) { return age_x(i); })
+            .attr('y', function(d) { return ageHeight - age_y(d); })
+            .attr('width', age_xScale.rangeBand())
+            .attr('height', function(d) { return age_y(d); })
+            .style('fill', colors[2]);
+
+
+          //label bars
+          svg_age_graph.selectAll('text')
+            .data(ageData.value, function (d) { return d; })
+            .enter()
+            .append('text')
+            .text(function (d) { return d; })
+            .attr('text-anchor', 'middle')
+            .attr('x', function (d, i) { return age_x(i) + age_x.rangeBand() / 2; })
+            .attr('y', function (d) { return age_yScale(d) - 5; })
+            .attr('font-family', 'sans-serif')
+            .attr('font-size', '12')
+            .attr('fill', 'black');
+
+        // INDIANA DEATHS AND HOSPITALIZATION STATUS ********************************************
+
+        //size
+        var hospitalMargin = {top: 80, right: 180, bottom: 80, left: 180},
+            hospitalWidth = 960 - hospitalMargin.left - hospitalMargin.right,
+            hospitalHeight = 500 - hospitalMargin.top - hospitalMargin.bottom;
+
+        var svg_hospital_graph = d3.select("#hospital-graph-grid")
+          .attr("width", hospitalWidth + hospitalMargin.left + hospitalMargin.right)
+          .attr("height", hospitalHeight + hospitalMargin.top + hospitalMargin.bottom)
+          .style('border', 'solid')
+          .append("g")
+          .attr("transform", "translate(" + hospitalMargin.left + "," + hospitalMargin.top + ")");
+
+        //grab hospitalization status death data
+        var totalHospitalized = 0,
+            totalNot = 0;
+
+        //hospitalization status counts
+        for (i = 0; i < data.length; i++) {
+          if (data[i].hosp_yn == "Yes" && data[i].death_yn == "Yes") {
+            totalHospitalized++;
+          } else if (data[i].hosp_yn == "No" && data[i].death_yn == "Yes") {
+            totalNot++;
+          }
+        };
+
+        var hospitalData = {
+          hospitalized: ['Yes', 'No'],
+          value: [totalHospitalized, totalNot]
+        };
+
+        //scales and axes
+        var hospital_x = d3.scale.ordinal()
+          .domain(d3.range(hospitalData.value.length))
+          .rangeRoundBands([0, hospitalWidth], 0.05);
+
+        var hospital_y = d3.scale.linear()
+          .domain([0, d3.max(hospitalData.value)])
+          .range([0, hospitalHeight]);
+
+        var hospital_xScale = d3.scale.ordinal()
+          .domain(['Yes', 'No'])
+          .rangeRoundBands([0, hospitalWidth], 0.05);
+
+        var hospital_yScale = d3.scale.linear()
+          .domain([d3.max(hospitalData.value), 0])
+          .range([0, hospitalHeight]);
+
+        var hospital_xAxis = d3.svg.axis()
+          .scale(hospital_xScale);
+
+        var hospital_yAxis = d3.svg.axis()
+          .orient('left')
+          .scale(hospital_yScale);
+
+        svg_hospital_graph.append('g')
+          .attr('class', 'x-axis')
+          .attr('transform', 'translate(0,' + hospitalHeight + ')')
+          .call(hospital_xAxis);
+
+        svg_hospital_graph.append('g')
+          .attr('class', 'y-axis')
+          .call(hospital_yAxis);
+
+        //y axis text label
+        svg_hospital_graph.append('text')
+          .attr('class', 'y-axis-label')
+          .attr('text-anchor', 'middle')
+          .attr('y', hospitalMargin.left + 60)
+          .attr('x', hospitalHeight / 2)
+          .attr('transform', 'translate(' + hospitalMargin.left + ')')
+          .attr('transform', function(d) {
+            return 'translate(' + hospitalMargin.left + ') rotate(90)'
+          })
+          .text('Number of Cases');
+
+        //bar chart
+          svg_hospital_graph.selectAll('bar1')
+            .data(hospitalData.value, function(d) { return d; })
+            .enter()
+            .append('rect')
+            .attr('x', function (d, i) { return hospital_x(i); })
+            .attr('y', function(d) { return hospitalHeight - hospital_y(d); })
+            .attr('width', hospital_xScale.rangeBand())
+            .attr('height', function(d) { return hospital_y(d); })
+            .style('fill', colors[2]);
+
+
+          //label bars
+          svg_hospital_graph.selectAll('text')
+            .data(hospitalData.value, function (d) { return d; })
+            .enter()
+            .append('text')
+            .text(function (d) { return d; })
+            .attr('text-anchor', 'middle')
+            .attr('x', function (d, i) { return hospital_x(i) + hospital_x.rangeBand() / 2; })
+            .attr('y', function (d) { return hospital_yScale(d) - 5; })
+            .attr('font-family', 'sans-serif')
+            .attr('font-size', '12')
+            .attr('fill', 'black');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
+
+        var death_xScale = d3.scale.ordinal()
+          .domain(d3.range(ageData.length))
+          .rangeRoundBands([0, deathWidth], 0.05);
+
+        var death_yScale = d3.scale.linear()
+          .domain([0, d3.max(ageData, function(d) { return d.value; } )])
+          .range([0, deathHeight]);
+
+        //define key action
+        var key = function(d) { return d.key};
+
+        //bars
+        svg_death_graph.selectAll('rect')
+          .data(ageData, key)
+          .enter()
+          .append('rect')
+          .attr('x', function(d, i) { return death_xScale(i); })
+          .attr('y', function(d) { return deathHeight - death_yScale(d.value); })
+          .attr('wdith', death_xScale.rangeBand())
+          .attr('height', function(d) { return death_yScale(d.value); })
+          .on('mouseover', function() {
+             d3.select(this).attr('fill', colors[0] )
+          })
+          .on('mouseout', function(d) {
+            d3.select(this)
+              .transition()
+              .duration(250)
+              .attr('fill', colors[2] )
+          });
+
+          //labels
+          svg_death_graph.selectAll('text')
+            .data(ageData, key)
+            .enter()
+            .append('text')
+            .text(function(d) { return d.value; })
+            .attr('text-anchor', 'middle')
+            .attr('x', function(d, i) {
+              return death_xScale(i) + death_xScale.rangeBand() / 2;
+            })
+            .attr('y', function(d) {
+              return deathHeight - death_yScale(d.value) + 14;
+            })
+            .attr('font-family', 'sans-serif')
+            .attr('font-size', 11)
+            .attr('fill', 'white');
+
+
+            */
+
+
+    });
 
 
 
