@@ -51,8 +51,13 @@
           </div>
 
           <div class="item6">
-              <p class="sub-sub-header">Cases by Race Group</p>
+              <p class="sub-sub-header">Indiana Cases by Race</p>
               <svg id="race-graph-grid"></svg>
+          </div>
+
+          <div class="item7">
+              <p class="sub-sub-header">Indiana Cases by sex</p>
+              <svg id="sex-graph-grid"></svg>
           </div>
         </div>
 
@@ -576,7 +581,7 @@
         value: [totalAsian, totalBlack, totalMultipleOther, totalWhite]
       };
 
-      console.log(raceData);
+      //console.log(raceData);
 
       //scales and axes
       var race_x = d3.scale.ordinal()
@@ -625,7 +630,7 @@
 
       //bar chart
         svg_race_graph.selectAll('bar1')
-          .data(raceData.value, function(d) {console.log(d); return d; })
+          .data(raceData.value, function(d) { return d; })
           .enter()
           .append('rect')
           .attr('x', function (d, i) { return race_x(i); })
@@ -647,32 +652,109 @@
           .attr('font-family', 'sans-serif')
           .attr('font-size', '12')
           .attr('fill', 'black');
-      /*
-      var raceMargin = {top: 35, right: 0, bottom: 30, left: 40},
-        raceWidth = 960 - raceMargin.left - raceMargin.right,
-        raceHeight = 500 - raceMargin.top - raceMargin.bottom
 
-      //svg
-      var svg_race_graph = d3.select('#race-graph-grid')
-        .attr('width', 960)
-        .attr('height', 500)
-        .append('g')
-        .attr("transform", "translate(" + raceMargin.left + "," + raceMargin.top + ")")
-        .style('border', 'solid');
+        // INDIANA CASES BY sex ********************************************
 
-      //scales
-      var race_x = d3.scale.ordinal()
-        .domain(data.map(function(d) { return d['']}))
+        //size
+        var sexMargin = {top: 35, right: 0, bottom: 30, left: 40},
+          sexWidth = 960 - sexMargin.left - sexMargin.right,
+          sexHeight = 500 - sexMargin.top - sexMargin.bottom;
 
-      var race_y = d3.scale.linear()
-        .domain([0, d3.max(data, function(d) {return d['race']; }) * 1.1])
-        .range([raceHeight, 0]);
-        */
+        //svg
+        var svg_sex_graph = d3.select('#sex-graph-grid')
+          .attr('width', sexWidth + sexMargin.left + sexMargin.right)
+          .attr('height', sexHeight + sexMargin.top + sexMargin.bottom)
+          .style('border', 'solid')
+          .append('g')
+          .attr('transform', 'translate(' + sexMargin.left + ',' + sexMargin.top + ')');
+
+        var totalFemale = 0,
+            totalMale = 0;
+
+        //get total count for each sex
+        for (i = 0; i < data.length; i++) {
+          if (data[i].sex == "Female") {
+            totalFemale++;
+          } else if (data[i].sex == "Male") {
+            totalMale++;
+          }
+        };
+
+        //make data array
+        var sexData = {
+          sex: ['Female', 'Male'],
+          value: [totalFemale, totalMale]
+        };
+
+        //scales and axes
+        var sex_x = d3.scale.ordinal()
+        .domain(d3.range(sexData.value.length))
+        .rangeRoundBands([0, sexWidth], 0.05);
+
+        var sex_y = d3.scale.linear()
+          .domain([0, d3.max(sexData.value)])
+          .range([0, sexHeight]);
+
+        var sex_xScale = d3.scale.ordinal()
+          .domain(['Female', 'Male'])
+          .rangeRoundBands([0, sexWidth], 0.05);
+
+        var sex_yScale = d3.scale.linear()
+          .domain([d3.max(sexData.value), 0])
+          .range([0, sexHeight]);
+
+        var sex_xAxis = d3.svg.axis()
+          .scale(sex_xScale);
+
+        var sex_yAxis = d3.svg.axis()
+          .orient('left')
+          .scale(sex_yScale);
+
+        svg_sex_graph.append('g')
+          .attr('class', 'x-axis')
+          .attr('transform', 'translate(0,' + sexHeight + ')')
+          .call(sex_xAxis);
+
+        svg_sex_graph.append('g')
+          .attr('class', 'y-axis')
+          .call(sex_yAxis);
+
+        //y axis text label
+        svg_sex_graph.append('text')
+          .attr('class', 'y-axis-label')
+          .attr('text-anchor', 'middle')
+          .attr('y', sexMargin.left + 60)
+          .attr('x', sexHeight / 2)
+          .attr('transform', 'translate(' + sexMargin.left + ')')
+          .attr('transform', function(d) {
+            return 'translate(' + sexMargin.left + ') rotate(90)'
+          })
+          .text('Number of Cases');
+
+        //bar chart
+          svg_sex_graph.selectAll('bar1')
+            .data(sexData.value, function(d) { return d; })
+            .enter()
+            .append('rect')
+            .attr('x', function (d, i) { return sex_x(i); })
+            .attr('y', function(d) { return sexHeight - sex_y(d); })
+            .attr('width', sex_xScale.rangeBand())
+            .attr('height', function(d) { return sex_y(d); })
+            .style('fill', colors[2]);
 
 
-
-
-
+          //label bars
+          svg_sex_graph.selectAll('text')
+            .data(sexData.value, function (d) { return d; })
+            .enter()
+            .append('text')
+            .text(function (d) { return d; })
+            .attr('text-anchor', 'middle')
+            .attr('x', function (d, i) { return sex_x(i) + sex_x.rangeBand() / 2; })
+            .attr('y', function (d) { return sex_yScale(d) - 5; })
+            .attr('font-family', 'sans-serif')
+            .attr('font-size', '12')
+            .attr('fill', 'black');
 
     })
 
