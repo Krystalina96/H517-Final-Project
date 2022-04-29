@@ -37,7 +37,7 @@
           <div class="item3">
               <div id="map">
                   <p class="sub-header">Map of Outbreak</p>
-                  <p class="information-text" id="map-information-text">Hover over states on the map for additional information.</p>
+                  <p class="information-text" id="map-information-text">Hover over and select states on the map for additional information</p>
                   <svg id="map-grid"></svg>
                   <div id="map-tooltip"></div>
               </div>
@@ -102,13 +102,16 @@
       //total cases svg
       var svg_total_cases = d3.select("#total-cases-grid")
         .attr("width", 300)
-        .attr("height", 100)
-        .style("border", "solid");
+        .attr("height", 150);
+        //.style("border", "solid");
 
       svg_total_cases.append("text")
         .attr('x', '50%')
         .attr('y', 20)
         .style('text-anchor', 'middle')
+        .style('alignment-baseline', 'central')
+        .style('font-size', 20)
+        .attr('transform', 'translate(0, 20)')
         .text("Total Cases");
 
       var totalCases = data[data.length - 1].total_cases;
@@ -119,18 +122,23 @@
         .style('font-size', 40)
         .style('font-weight', 'bold')
         .style('text-anchor', 'middle')
+        .style('alignment-baseline', 'central')
+        .attr('transform', 'translate(0, 20)')
         .text(numberWithCommas(totalCases));
 
       //total deaths svg
       var svg_total_deaths = d3.select("#total-deaths-grid")
         .attr("width", 300)
-        .attr("height", 100)
-        .style("border", "solid");
+        .attr("height", 150);
+        //.style("border", "solid");
 
       svg_total_deaths.append("text")
         .attr('x', '50%')
         .attr('y', 20)
         .style('text-anchor', 'middle')
+        .style('alignment-baseline', 'central')
+        .style('font-size', 20)
+        .attr('transform', 'translate(0, 20)')
         .text("Total Deaths");
 
       var totalDeaths = data[data.length - 1].total_deaths;
@@ -141,13 +149,15 @@
         .style('font-size', 40)
         .style('font-weight', 'bold')
         .style('text-anchor', 'middle')
+        .style('alignment-baseline', 'central')
+        .attr('transform', 'translate(0, 20)')
         .text(numberWithCommas(totalDeaths));
 
 
       // DEATHS PIE CHART ********************************************
       var pieMargin = {top: 0, right: 20, bottom: 20, left: 20},
-          pieWidth = 400 - pieMargin.left - pieMargin.right,
-          pieHeight = 250 - pieMargin.top - pieMargin.bottom
+          pieWidth = 350 - pieMargin.left - pieMargin.right,
+          pieHeight = 150 - pieMargin.top - pieMargin.bottom
           pieRadius = pieHeight / 2;
 
       var percentSurvived = (Number(totalCases) - Number(totalDeaths)) * 100 / Number(totalCases);
@@ -163,7 +173,7 @@
         .data([pieData])
         .attr('width', pieWidth + pieMargin.left + pieMargin.right)
         .attr('height', pieHeight + pieMargin.top + pieMargin.bottom)
-        .style('border', 'solid')
+        //.style('border', 'solid')
         .append('g')
         .attr('transform', 'translate(' + pieRadius + ',' + pieRadius + ')');
 
@@ -180,7 +190,9 @@
       arcs.append('path')
         .attr('fill', function(d, i) {return colors[i]; })
         .attr('d', function(d) {return arc(d); })
+        .attr('transform', 'translate(10, 10)');
 
+      /*
       //pie chart text
       arcs.append('text')
         .attr('transform', function(d) {
@@ -191,14 +203,15 @@
         .attr('text-anchor', 'middle')
         .style('font-size', 20)
         .text(function(d, i) {return pieData[i].value + '%'; });
+        */
 
       //legend svg
       var svg_pie_legend = svg_pie_chart.append('g')
         .attr('width', 140)
         .attr('height', 200)
-        .style('border', 'solid')
+        //.style('border', 'solid')
         .data(color.domain().slice().reverse())
-        .attr('transform', 'translate(120, -30)');
+        .attr('transform', 'translate(80, -20)');
 
       var legend_squares = svg_pie_legend.selectAll("rect")
         .data([0, squareDimensions + 10])
@@ -213,7 +226,7 @@
         .attr('y', function(d) { return d; })
         .attr('fill', function (d, i) {return legendColors(i); });
 
-      var legendText = ["Percent Survived", "Percent Deaths"];
+      var legendText = ["Percent Survived: 99%", "Percent Deaths - 1%"];
 
       var legend_labels = svg_pie_legend.selectAll("text")
         .data([16, 46])
@@ -252,8 +265,8 @@
     //create SVG map area
     var svg_map = d3.select("#map-grid")
         .attr("width", mapWidth + mapMargin.left + mapMargin.right)
-        .attr("height", mapHeight + mapMargin.top + mapMargin.bottom)
-        .style('border', 'solid');
+        .attr("height", mapHeight + mapMargin.top + mapMargin.bottom);
+        //.style('border', 'solid');
 
     //define legend text
     var legendText = ["4k - 156.3k", "235.8k - 444.6k", "478.0k - 833.7k", "928.6k - 1.5M", "1.6M - 2.8M", "3.1M - 9.1M"];
@@ -342,7 +355,7 @@
                 .enter()
                 .append("path")
                 .attr("d", path)
-                .style("stroke", "black")
+                .style("stroke", "white")
                 .style("stroke-width", "1")
                 .style("fill", function (d) {
                     //get data value
@@ -598,8 +611,8 @@
       //line graph svg
       var svg_line = d3.select("#line-graph-grid")
         .attr("height", lineHeight + lineMargin.top + lineMargin.bottom)
-        .attr("width", lineWidth + lineMargin.left + lineMargin.right)
-        .style("border", "solid");
+        .attr("width", lineWidth + lineMargin.left + lineMargin.right);
+        //.style("border", "solid");
 
       var lineGroup = svg_line.append("g")
         .attr("class", "lineGroup")
@@ -639,6 +652,9 @@
       document.getElementById("age-header").innerHTML = stateName + ": Deaths by Age Group";
       document.getElementById("hospital-header").innerHTML = stateName + ": Deaths by Hospitalization Status";
 
+      document.getElementsByClassName("item4")[0].style.visibility = 'visible';
+      document.getElementsByClassName("item5")[0].style.visibility = 'visible';
+
 
 
 
@@ -655,7 +671,7 @@
       var svg_race_graph = d3.select(raceGraphGrid)
         .attr('width', raceWidth + raceMargin.left + raceMargin.right)
         .attr('height', raceHeight + raceMargin.top + raceMargin.bottom)
-        .style('border', 'solid')
+        //.style('border', 'solid')
         .append('g')
         .attr('transform', 'translate(' + raceMargin.left + ',' + raceMargin.top + ')');
 
@@ -724,7 +740,7 @@
       svg_race_graph.append('text')
         .attr('class', 'y-axis-label')
         .attr('text-anchor', 'middle')
-        .attr('y', raceMargin.left + 70)
+        .attr('y', raceMargin.left + 80)
         .attr('x', raceHeight / 2)
         .attr('transform', function(d) {
           return 'translate(' + raceMargin.left + ') rotate(90)'
@@ -767,7 +783,7 @@
         var svg_sex_graph = d3.select(sexGraphGrid)
           .attr('width', sexWidth + sexMargin.left + sexMargin.right)
           .attr('height', sexHeight + sexMargin.top + sexMargin.bottom)
-          .style('border', 'solid')
+          //.style('border', 'solid')
           .append('g')
           .attr('transform', 'translate(' + sexMargin.left + ',' + sexMargin.top + ')');
 
@@ -826,7 +842,7 @@
         svg_sex_graph.append('text')
           .attr('class', 'y-axis-label')
           .attr('text-anchor', 'middle')
-          .attr('y', sexMargin.left + 70)
+          .attr('y', sexMargin.left + 80)
           .attr('x', sexHeight / 2)
           //.attr('transform', 'translate(' + sexMargin.left + ')')
           .attr('transform', function(d) {
@@ -869,7 +885,7 @@
         var svg_age_graph = d3.select(ageGraphGrid)
         	.attr("width", ageWidth + ageMargin.left + ageMargin.right)
           .attr("height", ageHeight + ageMargin.top + ageMargin.bottom)
-          .style('border', 'solid')
+          //.style('border', 'solid')
         	.append("g")
           .attr("transform", "translate(" + ageMargin.left + "," + ageMargin.top + ")");
 
@@ -943,7 +959,7 @@
           .attr('transform', function(d) {
             return 'translate(' + ageMargin.left + ') rotate(90)'
           })
-          .text('Number of Cases');
+          .text('Number of Deaths');
 
         //bar chart
           svg_age_graph.selectAll('bar1')
@@ -954,7 +970,7 @@
             .attr('y', function(d) { return ageHeight - age_y(d); })
             .attr('width', age_xScale.rangeBand())
             .attr('height', function(d) { return age_y(d); })
-            .style('fill', colors[2]);
+            .style('fill', colors[4]);
 
 
           //label bars
@@ -980,7 +996,7 @@
         var svg_hospital_graph = d3.select(hospitalGraphGrid)
           .attr("width", hospitalWidth + hospitalMargin.left + hospitalMargin.right)
           .attr("height", hospitalHeight + hospitalMargin.top + hospitalMargin.bottom)
-          .style('border', 'solid')
+          //.style('border', 'solid')
           .append("g")
           .attr("transform", "translate(" + hospitalMargin.left + "," + hospitalMargin.top + ")");
 
@@ -1045,7 +1061,7 @@
           .attr('transform', function(d) {
             return 'translate(' + hospitalMargin.left + ') rotate(90)'
           })
-          .text('Number of Cases');
+          .text('Number of Deaths');
 
         //bar chart
           svg_hospital_graph.selectAll('bar1')
@@ -1056,7 +1072,7 @@
             .attr('y', function(d) { return hospitalHeight - hospital_y(d); })
             .attr('width', hospital_xScale.rangeBand())
             .attr('height', function(d) { return hospital_y(d); })
-            .style('fill', colors[2]);
+            .style('fill', colors[4]);
 
 
           //label bars
@@ -1071,10 +1087,6 @@
             .attr('font-family', 'sans-serif')
             .attr('font-size', '12')
             .attr('fill', 'black');
-
-
-
-
     });
 
 
