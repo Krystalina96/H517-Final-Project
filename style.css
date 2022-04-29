@@ -181,3 +181,52 @@ path:hover {
   stroke: black;
   stroke-width: 1;
 }
+
+/************************* ABOUT PAGE *************************/
+.about > div
+:not(.header, .sub-header) {
+    font-size: 20px;
+}
+
+.sketch {
+    width: 700px;
+    height: auto;
+}
+
+.screenshot {
+    width: 400px;
+    height: auto;
+}
+
+.discovery-grid-container li {
+    margin: 20px;
+}
+
+.about-item0,
+.about-item1,
+.about-item2,
+.about-item3 {
+    margin: 30px;
+    padding: 40px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+/************************* VIDEO PAGE *************************/
+.video > div {
+    margin: 50px;
+}
+
+.video-embed {
+    padding: 50px;
+}
+
+iframe {
+    margin: 0 auto;
+    display: block;
+}
+
+/* footer */ 
+.footer {
+    text-align: center;
+    margin: 20px;
+}
