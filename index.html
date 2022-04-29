@@ -17,23 +17,24 @@
 
     <!-- Page content -->
     <div class="main">
-        <div class="header">COVID-19</div>
+        <div class="header">COVID-19 in the US</div>
         <div id="sub-title">a visualization by Krystal Nolasco</div>
 
         <div class="grid-container">
           <div class="item1">
               <svg id="total-cases-grid"></svg>
-          </div>
-
-          <div class="item2">
               <svg id="total-deaths-grid"></svg>
-          </div>
-
-          <div class="item3">
               <svg id="pie-chart-grid"></svg>
           </div>
 
-          <div class="item4">
+          <div class="item2">
+            <div id="line-graph">
+                <p class="sub-header">Timeline of Cases Per Day</p>
+                <svg id="line-graph-grid"></svg>
+            </div>
+          </div>
+
+          <div class="item3">
               <div id="map">
                   <p class="sub-header">Map of Outbreak</p>
                   <p class="information-text" id="map-information-text">Hover over states on the map for additional information.</p>
@@ -42,32 +43,28 @@
               </div>
           </div>
 
-          <div class="item5">
-            <div id="line-graph">
-                <p class="sub-header">Timeline of Deaths Per Day</p>
-                <p class="information-text">Hover over bars on the chart to visualize deaths by date on the map.</p>
-                <svg id="line-graph-grid"></svg>
+          <div class="item4">
+            <div id="race">
+                <p class="sub-sub-header" id="race-header"></p>
+                <svg id="race-graph-grid"></svg>
+            </div>
+
+            <div id="sex">
+              <p class="sub-sub-header" id="sex-header"></p>
+              <svg id="sex-graph-grid"></svg>
             </div>
           </div>
 
-          <div class="item6">
-              <p class="sub-sub-header" id="race-header"></p>
-              <svg id="race-graph-grid"></svg>
-          </div>
+          <div class="item5">
+            <div id="age">
+                <p class="sub-sub-header" id="age-header"></p>
+                <svg id="age-graph-grid"></svg>
+            </div>
 
-          <div class="item7">
-              <p class="sub-sub-header" id="sex-header"></p>
-              <svg id="sex-graph-grid"></svg>
-          </div>
-
-          <div class="item8">
-              <p class="sub-sub-header" id="age-header"></p>
-              <svg id="age-graph-grid"></svg>
-          </div>
-
-          <div class="item9">
+            <div id="hospital">
               <p class="sub-sub-header" id="hospital-header"></p>
               <svg id="hospital-graph-grid"></svg>
+            </div>
           </div>
         </div>
 
@@ -149,7 +146,7 @@
 
       // DEATHS PIE CHART ********************************************
       var pieMargin = {top: 0, right: 20, bottom: 20, left: 20},
-          pieWidth = 1000 - pieMargin.left - pieMargin.right,
+          pieWidth = 400 - pieMargin.left - pieMargin.right,
           pieHeight = 250 - pieMargin.top - pieMargin.bottom
           pieRadius = pieHeight / 2;
 
@@ -650,8 +647,8 @@
       // CASES BY RACE ********************************************
 
       //size
-      var raceMargin = {top: 35, right: 0, bottom: 30, left: 40},
-        raceWidth = 960 - raceMargin.left - raceMargin.right,
+      var raceMargin = {top: 30, right: 30, bottom: 40, left: 80},
+        raceWidth = 500 - raceMargin.left - raceMargin.right,
         raceHeight = 500 - raceMargin.top - raceMargin.bottom;
 
       //svg
@@ -661,8 +658,6 @@
         .style('border', 'solid')
         .append('g')
         .attr('transform', 'translate(' + raceMargin.left + ',' + raceMargin.top + ')');
-
-
 
       var totalAsian = 0,
           totalBlack = 0,
@@ -729,9 +724,8 @@
       svg_race_graph.append('text')
         .attr('class', 'y-axis-label')
         .attr('text-anchor', 'middle')
-        .attr('y', raceMargin.left + 60)
+        .attr('y', raceMargin.left + 70)
         .attr('x', raceHeight / 2)
-        .attr('transform', 'translate(' + raceMargin.left + ')')
         .attr('transform', function(d) {
           return 'translate(' + raceMargin.left + ') rotate(90)'
         })
@@ -765,8 +759,8 @@
         // CASES BY SEX ********************************************
 
         //size
-        var sexMargin = {top: 35, right: 0, bottom: 30, left: 40},
-          sexWidth = 960 - sexMargin.left - sexMargin.right,
+        var sexMargin = {top: 30, right: 30, bottom: 40, left: 80},
+          sexWidth = 500 - sexMargin.left - sexMargin.right,
           sexHeight = 500 - sexMargin.top - sexMargin.bottom;
 
         //svg
@@ -832,9 +826,9 @@
         svg_sex_graph.append('text')
           .attr('class', 'y-axis-label')
           .attr('text-anchor', 'middle')
-          .attr('y', sexMargin.left + 60)
+          .attr('y', sexMargin.left + 70)
           .attr('x', sexHeight / 2)
-          .attr('transform', 'translate(' + sexMargin.left + ')')
+          //.attr('transform', 'translate(' + sexMargin.left + ')')
           .attr('transform', function(d) {
             return 'translate(' + sexMargin.left + ') rotate(90)'
           })
@@ -865,11 +859,11 @@
             .attr('font-size', '12')
             .attr('fill', 'black');
 
-        // DEATHS AND AGE ********************************************
+        // DEATHS BY AGE ********************************************
 
         //size
-        var ageMargin = {top: 80, right: 180, bottom: 80, left: 180},
-            ageWidth = 960 - ageMargin.left - ageMargin.right,
+        var ageMargin = {top: 30, right: 30, bottom: 40, left: 80},
+            ageWidth = 500 - ageMargin.left - ageMargin.right,
             ageHeight = 500 - ageMargin.top - ageMargin.bottom;
 
         var svg_age_graph = d3.select(ageGraphGrid)
@@ -976,11 +970,11 @@
             .attr('font-size', '12')
             .attr('fill', 'black');
 
-        // DEATHS AND HOSPITALIZATION STATUS ********************************************
+        // DEATHS BY HOSPITALIZATION STATUS ********************************************
 
         //size
-        var hospitalMargin = {top: 80, right: 180, bottom: 80, left: 180},
-            hospitalWidth = 960 - hospitalMargin.left - hospitalMargin.right,
+        var hospitalMargin = {top: 30, right: 30, bottom: 40, left: 80},
+            hospitalWidth = 500 - hospitalMargin.left - hospitalMargin.right,
             hospitalHeight = 500 - hospitalMargin.top - hospitalMargin.bottom;
 
         var svg_hospital_graph = d3.select(hospitalGraphGrid)

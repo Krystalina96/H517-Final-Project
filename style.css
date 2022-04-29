@@ -41,6 +41,95 @@ body {
     .sidenav a {font-size: 18px;}
 }
 
+/* GRID */
+
+.item1 { grid-area: totals; }
+.item2 { grid-area: timeline; }
+.item3 { grid-area: map; }
+.item4 { grid-area: cases; }
+.item5 { grid-area: deaths; }
+
+.grid-container {
+    display: grid;
+    grid-template-areas:
+        'totals totals totals totals'
+        'timeline timeline timeline timeline'
+        'map map map map'
+        'cases cases cases cases'
+        'deaths deaths deaths deaths';
+    gap: 10px;
+    margin-top: 30px;
+    padding: 10px;
+}
+
+.grid-container > div {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.item1,
+.item2,
+.item3,
+.item4,
+.item5 {
+    padding: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#race { grid-area: race; }
+#sex { grid-area: sex; }
+
+.item4 {
+  display: grid;
+  grid-template-areas:
+      'race sex';
+  gap: 10px;
+}
+
+#age { grid-area: age; }
+#hospital { grid-area: hospital; }
+
+.item5 {
+  display: grid;
+  grid-template-areas:
+      'age hospital';
+  gap: 10px;
+}
+
+
+* headers */
+
+.header,
+.sub-header,
+.sub-sub-header {
+    font-weight: bold;
+}
+
+.header {
+    font-size: 50px;
+    padding: 5px;
+    text-align: center;
+    margin-top: 30px;
+}
+
+#sub-title {
+    font-weight: bold;
+    font-size: 20px;
+    text-align:center;
+    margin-top: 10px;
+}
+
+.sub-header {
+    font-size: 30px;
+    margin: 0px;
+}
+
+.sub-sub-header {
+    font-size: 25px;
+    margin-bottom: 5px;
+}
+
+
 /* TOTAL CASES */
 #total-cases-grid {
   text-align: center;
@@ -78,4 +167,11 @@ path:hover {
   fill: none;
   stroke: slategray;
   shape-rendering: crispEdges;
+}
+
+.y-axis path,
+.x-axis path {
+  fill: none;
+  stroke: black;
+  stroke-width: 1;
 }
