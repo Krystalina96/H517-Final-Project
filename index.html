@@ -731,15 +731,6 @@
         .orient('left')
         .scale(race_yScale);
 
-      svg_race_graph.append('g')
-        .attr('class', 'x-axis')
-        .attr('transform', 'translate(0,' + raceHeight + ')')
-        .call(race_xAxis);
-
-      svg_race_graph.append('g')
-        .attr('class', 'y-axis')
-        .call(race_yAxis);
-
       //y axis text label
       svg_race_graph.append('text')
         .attr('class', 'y-axis-label')
@@ -775,6 +766,15 @@
           .attr('font-family', 'sans-serif')
           .attr('font-size', '12')
           .attr('fill', 'black');
+
+        svg_race_graph.append('g')
+          .attr('class', 'x-axis')
+          .attr('transform', 'translate(0,' + raceHeight + ')')
+          .call(race_xAxis);
+
+        svg_race_graph.append('g')
+          .attr('class', 'y-axis')
+          .call(race_yAxis);
 
         // CASES BY SEX ********************************************
 
@@ -833,15 +833,6 @@
           .orient('left')
           .scale(sex_yScale);
 
-        svg_sex_graph.append('g')
-          .attr('class', 'x-axis')
-          .attr('transform', 'translate(0,' + sexHeight + ')')
-          .call(sex_xAxis);
-
-        svg_sex_graph.append('g')
-          .attr('class', 'y-axis')
-          .call(sex_yAxis);
-
         //y axis text label
         svg_sex_graph.append('text')
           .attr('class', 'y-axis-label')
@@ -878,6 +869,16 @@
             .attr('font-family', 'sans-serif')
             .attr('font-size', '12')
             .attr('fill', 'black');
+
+          svg_sex_graph.append('g')
+            .attr('class', 'x-axis')
+            .attr('transform', 'translate(0,' + sexHeight + ')')
+            .call(sex_xAxis);
+
+          svg_sex_graph.append('g')
+            .attr('class', 'y-axis')
+            .call(sex_yAxis);
+
 
         // DEATHS BY AGE ********************************************
 
@@ -958,15 +959,6 @@
             .orient('left')
             .scale(age_yScale);
 
-          svg_age_graph.append('g')
-            .attr('class', 'x-axis')
-            .attr('transform', 'translate(0,' + ageHeight + ')')
-            .call(age_xAxis);
-
-          svg_age_graph.append('g')
-            .attr('class', 'y-axis')
-            .call(age_yAxis);
-
           //y axis text label
           svg_age_graph.append('text')
             .attr('class', 'y-axis-label')
@@ -1003,6 +995,16 @@
               .attr('font-family', 'sans-serif')
               .attr('font-size', '12')
               .attr('fill', 'black');
+
+            svg_age_graph.append('g')
+              .attr('class', 'x-axis')
+              .attr('transform', 'translate(0,' + ageHeight + ')')
+              .call(age_xAxis);
+
+            svg_age_graph.append('g')
+              .attr('class', 'y-axis')
+              .call(age_yAxis);
+
 
         };
 
@@ -1074,14 +1076,6 @@
             .orient('left')
             .scale(hospital_yScale);
 
-          svg_hospital_graph.append('g')
-            .attr('class', 'x-axis')
-            .attr('transform', 'translate(0,' + hospitalHeight + ')')
-            .call(hospital_xAxis);
-
-          svg_hospital_graph.append('g')
-            .attr('class', 'y-axis')
-            .call(hospital_yAxis);
 
           //y axis text label
           svg_hospital_graph.append('text')
@@ -1119,6 +1113,16 @@
               .attr('font-family', 'sans-serif')
               .attr('font-size', '12')
               .attr('fill', 'black');
+
+
+              svg_hospital_graph.append('g')
+                .attr('class', 'x-axis')
+                .attr('transform', 'translate(0,' + hospitalHeight + ')')
+                .call(hospital_xAxis);
+
+              svg_hospital_graph.append('g')
+                .attr('class', 'y-axis')
+                .call(hospital_yAxis);
         }
 
 
