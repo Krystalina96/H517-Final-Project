@@ -81,6 +81,11 @@ body {
     visibility: hidden;
 }
 
+.no-deaths-text {
+    font-size: 20px;
+    margin-top: 20px;
+}
+
 #race { grid-area: race; }
 #sex { grid-area: sex; }
 
@@ -182,6 +187,7 @@ path:hover {
   stroke-width: 1;
 }
 
+
 /************************* ABOUT PAGE *************************/
 .about > div
 :not(.header, .sub-header) {
@@ -225,7 +231,7 @@ iframe {
     display: block;
 }
 
-/* footer */ 
+/* footer */
 .footer {
     text-align: center;
     margin: 20px;

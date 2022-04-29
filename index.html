@@ -58,11 +58,13 @@
           <div class="item5">
             <div id="age">
                 <p class="sub-sub-header" id="age-header"></p>
+                <p class="no-deaths-text">There is no recorded data.</p>
                 <svg id="age-graph-grid"></svg>
             </div>
 
             <div id="hospital">
               <p class="sub-sub-header" id="hospital-header"></p>
+              <p class="no-deaths-text">There is no recorded data.</p>
               <svg id="hospital-graph-grid"></svg>
             </div>
           </div>
@@ -421,6 +423,8 @@
         stateFile = "data/AK_Covid_Cases.csv";
       } else if (stateName == "Arizona") {
         stateFile = "data/AZ_Covid_Cases.csv";
+      } else if (stateName == "Arkansas") {
+        stateFile = "data/AR_Covid_Cases.csv";
       } else if (stateName == "California") {
         stateFile = "data/CA_Covid_Cases.csv";
       } else if (stateName == "Colorado") {
@@ -877,17 +881,7 @@
 
         // DEATHS BY AGE ********************************************
 
-        //size
-        var ageMargin = {top: 30, right: 30, bottom: 40, left: 80},
-            ageWidth = 500 - ageMargin.left - ageMargin.right,
-            ageHeight = 500 - ageMargin.top - ageMargin.bottom;
 
-        var svg_age_graph = d3.select(ageGraphGrid)
-        	.attr("width", ageWidth + ageMargin.left + ageMargin.right)
-          .attr("height", ageHeight + ageMargin.top + ageMargin.bottom)
-          //.style('border', 'solid')
-        	.append("g")
-          .attr("transform", "translate(" + ageMargin.left + "," + ageMargin.top + ")");
 
         //grab age group death data
         var total_0_17 = 0,
@@ -911,80 +905,107 @@
           }
         };
 
-        var ageData = {
-          age: ['0-17', '18-49', '50-64', '65+'],
-          value: [total_0_17, total_18_49, total_50_64, total_65plus]
+        //check if there were any deaths
+        if(total_0_17 == 0 && total_18_49 == 0 && total_50_64 == 0 && total_65plus == 0) {
+          //console.log("empty");
+
+          //show no recorded deaths message
+          document.getElementsByClassName("no-deaths-text")[0].style.display = 'inline-block';
+
+        } else {
+
+          //remove the no recorded deaths element
+          document.getElementsByClassName("no-deaths-text")[0].style.display = 'none';
+
+          //size
+          var ageMargin = {top: 30, right: 30, bottom: 40, left: 80},
+              ageWidth = 500 - ageMargin.left - ageMargin.right,
+              ageHeight = 500 - ageMargin.top - ageMargin.bottom;
+
+          var svg_age_graph = d3.select(ageGraphGrid)
+          	.attr("width", ageWidth + ageMargin.left + ageMargin.right)
+            .attr("height", ageHeight + ageMargin.top + ageMargin.bottom)
+            //.style('border', 'solid')
+          	.append("g")
+            .attr("transform", "translate(" + ageMargin.left + "," + ageMargin.top + ")");
+
+          var ageData = {
+            age: ['0-17', '18-49', '50-64', '65+'],
+            value: [total_0_17, total_18_49, total_50_64, total_65plus]
+          };
+
+          //scales and axes
+          var age_x = d3.scale.ordinal()
+            .domain(d3.range(ageData.value.length))
+            .rangeRoundBands([0, ageWidth], 0.05);
+
+          var age_y = d3.scale.linear()
+            .domain([0, d3.max(ageData.value)])
+            .range([0, ageHeight]);
+
+          var age_xScale = d3.scale.ordinal()
+            .domain(['0-17', '18-49', '50-64', '65+'])
+            .rangeRoundBands([0, ageWidth], 0.05);
+
+          var age_yScale = d3.scale.linear()
+            .domain([d3.max(ageData.value), 0])
+            .range([0, ageHeight]);
+
+          var age_xAxis = d3.svg.axis()
+            .scale(age_xScale);
+
+          var age_yAxis = d3.svg.axis()
+            .orient('left')
+            .scale(age_yScale);
+
+          svg_age_graph.append('g')
+            .attr('class', 'x-axis')
+            .attr('transform', 'translate(0,' + ageHeight + ')')
+            .call(age_xAxis);
+
+          svg_age_graph.append('g')
+            .attr('class', 'y-axis')
+            .call(age_yAxis);
+
+          //y axis text label
+          svg_age_graph.append('text')
+            .attr('class', 'y-axis-label')
+            .attr('text-anchor', 'middle')
+            .attr('y', ageMargin.left + 60)
+            .attr('x', ageHeight / 2)
+            .attr('transform', 'translate(' + ageMargin.left + ')')
+            .attr('transform', function(d) {
+              return 'translate(' + ageMargin.left + ') rotate(90)'
+            })
+            .text('Number of Deaths');
+
+          //bar chart
+            svg_age_graph.selectAll('bar1')
+              .data(ageData.value, function(d) { return d; })
+              .enter()
+              .append('rect')
+              .attr('x', function (d, i) { return age_x(i); })
+              .attr('y', function(d) { return ageHeight - age_y(d); })
+              .attr('width', age_xScale.rangeBand())
+              .attr('height', function(d) { return age_y(d); })
+              .style('fill', colors[4]);
+
+
+            //label bars
+            svg_age_graph.selectAll('text')
+              .data(ageData.value, function (d) { return d; })
+              .enter()
+              .append('text')
+              .text(function (d) { return d; })
+              .attr('text-anchor', 'middle')
+              .attr('x', function (d, i) { return age_x(i) + age_x.rangeBand() / 2; })
+              .attr('y', function (d) { return age_yScale(d) - 5; })
+              .attr('font-family', 'sans-serif')
+              .attr('font-size', '12')
+              .attr('fill', 'black');
+
         };
 
-        //scales and axes
-        var age_x = d3.scale.ordinal()
-          .domain(d3.range(ageData.value.length))
-          .rangeRoundBands([0, ageWidth], 0.05);
-
-        var age_y = d3.scale.linear()
-          .domain([0, d3.max(ageData.value)])
-          .range([0, ageHeight]);
-
-        var age_xScale = d3.scale.ordinal()
-          .domain(['0-17', '18-49', '50-64', '65+'])
-          .rangeRoundBands([0, ageWidth], 0.05);
-
-        var age_yScale = d3.scale.linear()
-          .domain([d3.max(ageData.value), 0])
-          .range([0, ageHeight]);
-
-        var age_xAxis = d3.svg.axis()
-          .scale(age_xScale);
-
-        var age_yAxis = d3.svg.axis()
-          .orient('left')
-          .scale(age_yScale);
-
-        svg_age_graph.append('g')
-          .attr('class', 'x-axis')
-          .attr('transform', 'translate(0,' + ageHeight + ')')
-          .call(age_xAxis);
-
-        svg_age_graph.append('g')
-          .attr('class', 'y-axis')
-          .call(age_yAxis);
-
-        //y axis text label
-        svg_age_graph.append('text')
-          .attr('class', 'y-axis-label')
-          .attr('text-anchor', 'middle')
-          .attr('y', ageMargin.left + 60)
-          .attr('x', ageHeight / 2)
-          .attr('transform', 'translate(' + ageMargin.left + ')')
-          .attr('transform', function(d) {
-            return 'translate(' + ageMargin.left + ') rotate(90)'
-          })
-          .text('Number of Deaths');
-
-        //bar chart
-          svg_age_graph.selectAll('bar1')
-            .data(ageData.value, function(d) { return d; })
-            .enter()
-            .append('rect')
-            .attr('x', function (d, i) { return age_x(i); })
-            .attr('y', function(d) { return ageHeight - age_y(d); })
-            .attr('width', age_xScale.rangeBand())
-            .attr('height', function(d) { return age_y(d); })
-            .style('fill', colors[4]);
-
-
-          //label bars
-          svg_age_graph.selectAll('text')
-            .data(ageData.value, function (d) { return d; })
-            .enter()
-            .append('text')
-            .text(function (d) { return d; })
-            .attr('text-anchor', 'middle')
-            .attr('x', function (d, i) { return age_x(i) + age_x.rangeBand() / 2; })
-            .attr('y', function (d) { return age_yScale(d) - 5; })
-            .attr('font-family', 'sans-serif')
-            .attr('font-size', '12')
-            .attr('fill', 'black');
 
         // DEATHS BY HOSPITALIZATION STATUS ********************************************
 
@@ -1013,80 +1034,94 @@
           }
         };
 
-        var hospitalData = {
-          hospitalized: ['Yes', 'No'],
-          value: [totalHospitalized, totalNot]
-        };
+        //check if there were any deaths
+        if(totalHospitalized == 0 && totalNot == 0) {
+          //console.log("empty");
 
-        //scales and axes
-        var hospital_x = d3.scale.ordinal()
-          .domain(d3.range(hospitalData.value.length))
-          .rangeRoundBands([0, hospitalWidth], 0.05);
-
-        var hospital_y = d3.scale.linear()
-          .domain([0, d3.max(hospitalData.value)])
-          .range([0, hospitalHeight]);
-
-        var hospital_xScale = d3.scale.ordinal()
-          .domain(['Yes', 'No'])
-          .rangeRoundBands([0, hospitalWidth], 0.05);
-
-        var hospital_yScale = d3.scale.linear()
-          .domain([d3.max(hospitalData.value), 0])
-          .range([0, hospitalHeight]);
-
-        var hospital_xAxis = d3.svg.axis()
-          .scale(hospital_xScale);
-
-        var hospital_yAxis = d3.svg.axis()
-          .orient('left')
-          .scale(hospital_yScale);
-
-        svg_hospital_graph.append('g')
-          .attr('class', 'x-axis')
-          .attr('transform', 'translate(0,' + hospitalHeight + ')')
-          .call(hospital_xAxis);
-
-        svg_hospital_graph.append('g')
-          .attr('class', 'y-axis')
-          .call(hospital_yAxis);
-
-        //y axis text label
-        svg_hospital_graph.append('text')
-          .attr('class', 'y-axis-label')
-          .attr('text-anchor', 'middle')
-          .attr('y', hospitalMargin.left + 60)
-          .attr('x', hospitalHeight / 2)
-          .attr('transform', 'translate(' + hospitalMargin.left + ')')
-          .attr('transform', function(d) {
-            return 'translate(' + hospitalMargin.left + ') rotate(90)'
-          })
-          .text('Number of Deaths');
-
-        //bar chart
-          svg_hospital_graph.selectAll('bar1')
-            .data(hospitalData.value, function(d) { return d; })
-            .enter()
-            .append('rect')
-            .attr('x', function (d, i) { return hospital_x(i); })
-            .attr('y', function(d) { return hospitalHeight - hospital_y(d); })
-            .attr('width', hospital_xScale.rangeBand())
-            .attr('height', function(d) { return hospital_y(d); })
-            .style('fill', colors[4]);
+          //show no recorded deaths message
+          document.getElementsByClassName("no-deaths-text")[1].style.display = 'inline-block';
+        } else {
+          //remove the no recorded deaths element
+          document.getElementsByClassName("no-deaths-text")[1].style.display = 'none';
 
 
-          //label bars
-          svg_hospital_graph.selectAll('text')
-            .data(hospitalData.value, function (d) { return d; })
-            .enter()
-            .append('text')
-            .text(function (d) { return d; })
+          var hospitalData = {
+            hospitalized: ['Yes', 'No'],
+            value: [totalHospitalized, totalNot]
+          };
+
+          //scales and axes
+          var hospital_x = d3.scale.ordinal()
+            .domain(d3.range(hospitalData.value.length))
+            .rangeRoundBands([0, hospitalWidth], 0.05);
+
+          var hospital_y = d3.scale.linear()
+            .domain([0, d3.max(hospitalData.value)])
+            .range([0, hospitalHeight]);
+
+          var hospital_xScale = d3.scale.ordinal()
+            .domain(['Yes', 'No'])
+            .rangeRoundBands([0, hospitalWidth], 0.05);
+
+          var hospital_yScale = d3.scale.linear()
+            .domain([d3.max(hospitalData.value), 0])
+            .range([0, hospitalHeight]);
+
+          var hospital_xAxis = d3.svg.axis()
+            .scale(hospital_xScale);
+
+          var hospital_yAxis = d3.svg.axis()
+            .orient('left')
+            .scale(hospital_yScale);
+
+          svg_hospital_graph.append('g')
+            .attr('class', 'x-axis')
+            .attr('transform', 'translate(0,' + hospitalHeight + ')')
+            .call(hospital_xAxis);
+
+          svg_hospital_graph.append('g')
+            .attr('class', 'y-axis')
+            .call(hospital_yAxis);
+
+          //y axis text label
+          svg_hospital_graph.append('text')
+            .attr('class', 'y-axis-label')
             .attr('text-anchor', 'middle')
-            .attr('x', function (d, i) { return hospital_x(i) + hospital_x.rangeBand() / 2; })
-            .attr('y', function (d) { return hospital_yScale(d) - 5; })
-            .attr('font-family', 'sans-serif')
-            .attr('font-size', '12')
-            .attr('fill', 'black');
+            .attr('y', hospitalMargin.left + 60)
+            .attr('x', hospitalHeight / 2)
+            .attr('transform', 'translate(' + hospitalMargin.left + ')')
+            .attr('transform', function(d) {
+              return 'translate(' + hospitalMargin.left + ') rotate(90)'
+            })
+            .text('Number of Deaths');
+
+          //bar chart
+            svg_hospital_graph.selectAll('bar1')
+              .data(hospitalData.value, function(d) { return d; })
+              .enter()
+              .append('rect')
+              .attr('x', function (d, i) { return hospital_x(i); })
+              .attr('y', function(d) { return hospitalHeight - hospital_y(d); })
+              .attr('width', hospital_xScale.rangeBand())
+              .attr('height', function(d) { return hospital_y(d); })
+              .style('fill', colors[4]);
+
+
+            //label bars
+            svg_hospital_graph.selectAll('text')
+              .data(hospitalData.value, function (d) { return d; })
+              .enter()
+              .append('text')
+              .text(function (d) { return d; })
+              .attr('text-anchor', 'middle')
+              .attr('x', function (d, i) { return hospital_x(i) + hospital_x.rangeBand() / 2; })
+              .attr('y', function (d) { return hospital_yScale(d) - 5; })
+              .attr('font-family', 'sans-serif')
+              .attr('font-size', '12')
+              .attr('fill', 'black');
+        }
+
+
     });
 
 
