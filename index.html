@@ -51,22 +51,22 @@
           </div>
 
           <div class="item6">
-              <p class="sub-sub-header">Indiana Cases by Race</p>
+              <p class="sub-sub-header" id="race-header"></p>
               <svg id="race-graph-grid"></svg>
           </div>
 
           <div class="item7">
-              <p class="sub-sub-header">Indiana Cases by sex</p>
+              <p class="sub-sub-header" id="sex-header"></p>
               <svg id="sex-graph-grid"></svg>
           </div>
 
           <div class="item8">
-              <p class="sub-sub-header">Indiana Cases Death Age !! </p>
+              <p class="sub-sub-header" id="age-header"></p>
               <svg id="age-graph-grid"></svg>
           </div>
 
           <div class="item9">
-              <p class="sub-sub-header">Indiana Cases Death Hospitalization Status !! </p>
+              <p class="sub-sub-header" id="hospital-header"></p>
               <svg id="hospital-graph-grid"></svg>
           </div>
         </div>
@@ -505,7 +505,7 @@
         stateFile = "data/WY_Covid_Cases.csv";
       };
 
-      loadCharts(stateFile);
+      loadCharts(stateFile, stateName);
 
       // setTimeout(
       //   function() {
@@ -628,16 +628,27 @@
 
     });
 
-    function loadCharts(file) {
+    function loadCharts(file, state) {
       raceGraphGrid.innerHTML = "";
       sexGraphGrid.innerHTML = "";
       ageGraphGrid.innerHTML = "";
       hospitalGraphGrid.innerHTML = "";
 
-      d3.csv(file, function(data) {
-      //console.log(data)
+      var stateName = state;
 
-    // INDIANA CASES BY RACE ********************************************
+      //graph headers
+      document.getElementById("race-header").innerHTML = stateName + ": Cases by Race";
+      document.getElementById("sex-header").innerHTML = stateName + ": Cases by Sex";
+      document.getElementById("age-header").innerHTML = stateName + ": Deaths by Age Group";
+      document.getElementById("hospital-header").innerHTML = stateName + ": Deaths by Hospitalization Status";
+
+
+
+
+      d3.csv(file, function(data) {
+
+      // CASES BY RACE ********************************************
+
       //size
       var raceMargin = {top: 35, right: 0, bottom: 30, left: 40},
         raceWidth = 960 - raceMargin.left - raceMargin.right,
@@ -751,7 +762,7 @@
           .attr('font-size', '12')
           .attr('fill', 'black');
 
-        // INDIANA CASES BY SEX ********************************************
+        // CASES BY SEX ********************************************
 
         //size
         var sexMargin = {top: 35, right: 0, bottom: 30, left: 40},
@@ -854,7 +865,7 @@
             .attr('font-size', '12')
             .attr('fill', 'black');
 
-        // INDIANA DEATHS AND AGE ********************************************
+        // DEATHS AND AGE ********************************************
 
         //size
         var ageMargin = {top: 80, right: 180, bottom: 80, left: 180},
@@ -965,7 +976,7 @@
             .attr('font-size', '12')
             .attr('fill', 'black');
 
-        // INDIANA DEATHS AND HOSPITALIZATION STATUS ********************************************
+        // DEATHS AND HOSPITALIZATION STATUS ********************************************
 
         //size
         var hospitalMargin = {top: 80, right: 180, bottom: 80, left: 180},
