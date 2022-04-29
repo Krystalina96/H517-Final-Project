@@ -910,7 +910,7 @@
           //console.log("empty");
 
           //show no recorded deaths message
-          document.getElementsByClassName("no-deaths-text")[0].style.display = 'inline-block';
+          document.getElementsByClassName("no-deaths-text")[0].style.display = 'block';
 
         } else {
 
@@ -1039,14 +1039,14 @@
           //console.log("empty");
 
           //show no recorded deaths message
-          document.getElementsByClassName("no-deaths-text")[1].style.display = 'inline-block';
+          document.getElementsByClassName("no-deaths-text")[1].style.display = 'block';
         } else {
           //remove the no recorded deaths element
           document.getElementsByClassName("no-deaths-text")[1].style.display = 'none';
 
 
           var hospitalData = {
-            hospitalized: ['Yes', 'No'],
+            hospitalized: ['Hospitalized', 'Not Hospitalized'],
             value: [totalHospitalized, totalNot]
           };
 
@@ -1060,7 +1060,7 @@
             .range([0, hospitalHeight]);
 
           var hospital_xScale = d3.scale.ordinal()
-            .domain(['Yes', 'No'])
+            .domain(['Hospitalized', 'Not Hospitalized'])
             .rangeRoundBands([0, hospitalWidth], 0.05);
 
           var hospital_yScale = d3.scale.linear()
