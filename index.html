@@ -76,6 +76,12 @@
   </body>
   <script>
 
+    var lineGraphGrid = document.getElementById("line-graph-grid");
+    var raceGraphGrid = document.getElementById("race-graph-grid");
+    var sexGraphGrid = document.getElementById("sex-graph-grid");
+    var ageGraphGrid = document.getElementById("age-graph-grid");
+    var hospitalGraphGrid = document.getElementById("hospital-graph-grid");
+
     //colors
     var colors = ["#ccffcc", "#7fcdbb", "#41b6c4", "#1d91c0", "#225da8", "#003366"];
 
@@ -384,7 +390,10 @@
                         .duration(500)
                         .style("opacity", 0);
                 })
-                .on('click', function(d) { selectedState = d.properties.name; setState(selectedState); })
+                .on('click', function(d) {
+                  selectedState = d.properties.name;
+                  setState(selectedState);
+                 })
 
 
         })
@@ -392,51 +401,54 @@
 
     });
 
-    function setState (stateName) { console.log(stateName);
+    function setState (stateName) {
 
-      var data;
+      var stateFile;
 
-      var IN_Cases,
-          AK_Cases;
+      if (stateName == "Alabama") {
+        stateFile = "data/AL_Covid_Cases.csv";
+      } else if (stateName == "Alaska") {
+        stateFile = "data/AK_Covid_Cases.csv";
+      } else if (stateName == "Arizona") {
+        stateFile = "data/AZ_Covid_Cases.csv";
+      } else if (stateName == "California") {
+        stateFile = "data/CA_Covid_Cases.csv";
+      } else if (stateName == "Colorado") {
+        stateFile = "data/CO_Covid_Cases.csv";
+      } else if (stateName == "Connecticut") {
+        stateFile = "data/CT_Covid_Cases.csv";
+      } else if (stateName == "Delaware") {
+        stateFile = "data/DE_Covid_Cases.csv";
+      } else if (stateName == "Florida") {
+        stateFile = "data/FL_Covid_Cases.csv";
+      } else if (stateName == "Georgia") {
+        stateFile = "data/GA_Covid_Cases.csv";
+      } else if (stateName == "Hawaii") {
+        stateFile = "data/HI_Covid_Cases.csv";
+      } else if (stateName == "Indiana") {
+        stateFile = "data/IN_Covid_Cases.csv";
+      };
 
-      d3.csv("data/IN_Covid_Cases.csv", function(data) {
-        IN_Cases = data;
-      });
+      loadCharts(stateFile);
 
-      d3.csv("data/AK_Covid_Cases.csv", function(data) {
-        AK_Cases = data;
-      });
+      // setTimeout(
+      //   function() {
+      //     if(stateName == "Indiana") {
+      //       //console.log(IN_Cases);
+      //       stateData = IN_Cases;
 
-      setTimeout(
-        function() {
-          if(stateName == "Indiana") {
-            //console.log(IN_Cases);
-            data = IN_Cases;
+      //       return stateData;
+      //     } else if (stateName == "Alaska") {
+      //       //console.log(AK_Cases);
+      //     }
+      //   },
 
-            return data;
-          } else if (stateName == "Alaska") {
-            //console.log(AK_Cases);
-          }
-        },
-
-        200
-      );
-      console.log(data);
-      return data;
+      //   200
+      // );
+      // console.log(stateData);
+      // return stateData;
 
   };
-
-  var dataVar = setState();
-
-  function runVisualizations (dataVar) {
-    //console.log(dataVar);
-
-
-  };
-
-
-
-
 
     // LINE GRAPH CASES OVER TIME ********************************************
 
@@ -540,18 +552,23 @@
 
     });
 
+    function loadCharts(file) {
+      raceGraphGrid.innerHTML = "";
+      sexGraphGrid.innerHTML = "";
+      ageGraphGrid.innerHTML = "";
+      hospitalGraphGrid.innerHTML = "";
 
-    // INDIANA CASES BY RACE ********************************************
-    d3.csv("data/IN_Covid_Cases.csv", function(data) {
+      d3.csv(file, function(data) {
       //console.log(data)
 
+    // INDIANA CASES BY RACE ********************************************
       //size
       var raceMargin = {top: 35, right: 0, bottom: 30, left: 40},
         raceWidth = 960 - raceMargin.left - raceMargin.right,
         raceHeight = 500 - raceMargin.top - raceMargin.bottom;
 
       //svg
-      var svg_race_graph = d3.select('#race-graph-grid')
+      var svg_race_graph = d3.select(raceGraphGrid)
         .attr('width', raceWidth + raceMargin.left + raceMargin.right)
         .attr('height', raceHeight + raceMargin.top + raceMargin.bottom)
         .style('border', 'solid')
@@ -666,7 +683,7 @@
           sexHeight = 500 - sexMargin.top - sexMargin.bottom;
 
         //svg
-        var svg_sex_graph = d3.select('#sex-graph-grid')
+        var svg_sex_graph = d3.select(sexGraphGrid)
           .attr('width', sexWidth + sexMargin.left + sexMargin.right)
           .attr('height', sexHeight + sexMargin.top + sexMargin.bottom)
           .style('border', 'solid')
@@ -768,7 +785,7 @@
             ageWidth = 960 - ageMargin.left - ageMargin.right,
             ageHeight = 500 - ageMargin.top - ageMargin.bottom;
 
-        var svg_age_graph = d3.select("#age-graph-grid")
+        var svg_age_graph = d3.select(ageGraphGrid)
         	.attr("width", ageWidth + ageMargin.left + ageMargin.right)
           .attr("height", ageHeight + ageMargin.top + ageMargin.bottom)
           .style('border', 'solid')
@@ -879,7 +896,7 @@
             hospitalWidth = 960 - hospitalMargin.left - hospitalMargin.right,
             hospitalHeight = 500 - hospitalMargin.top - hospitalMargin.bottom;
 
-        var svg_hospital_graph = d3.select("#hospital-graph-grid")
+        var svg_hospital_graph = d3.select(hospitalGraphGrid)
           .attr("width", hospitalWidth + hospitalMargin.left + hospitalMargin.right)
           .attr("height", hospitalHeight + hospitalMargin.top + hospitalMargin.bottom)
           .style('border', 'solid')
@@ -977,71 +994,10 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-        /*
-
-        var death_xScale = d3.scale.ordinal()
-          .domain(d3.range(ageData.length))
-          .rangeRoundBands([0, deathWidth], 0.05);
-
-        var death_yScale = d3.scale.linear()
-          .domain([0, d3.max(ageData, function(d) { return d.value; } )])
-          .range([0, deathHeight]);
-
-        //define key action
-        var key = function(d) { return d.key};
-
-        //bars
-        svg_death_graph.selectAll('rect')
-          .data(ageData, key)
-          .enter()
-          .append('rect')
-          .attr('x', function(d, i) { return death_xScale(i); })
-          .attr('y', function(d) { return deathHeight - death_yScale(d.value); })
-          .attr('wdith', death_xScale.rangeBand())
-          .attr('height', function(d) { return death_yScale(d.value); })
-          .on('mouseover', function() {
-             d3.select(this).attr('fill', colors[0] )
-          })
-          .on('mouseout', function(d) {
-            d3.select(this)
-              .transition()
-              .duration(250)
-              .attr('fill', colors[2] )
-          });
-
-          //labels
-          svg_death_graph.selectAll('text')
-            .data(ageData, key)
-            .enter()
-            .append('text')
-            .text(function(d) { return d.value; })
-            .attr('text-anchor', 'middle')
-            .attr('x', function(d, i) {
-              return death_xScale(i) + death_xScale.rangeBand() / 2;
-            })
-            .attr('y', function(d) {
-              return deathHeight - death_yScale(d.value) + 14;
-            })
-            .attr('font-family', 'sans-serif')
-            .attr('font-size', 11)
-            .attr('fill', 'white');
-
-
-            */
-
-
     });
 
+
+    }
 
 
 
